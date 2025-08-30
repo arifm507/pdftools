@@ -41,3 +41,8 @@ def image_to_pdf():
 def pdf_to_word():
     """PDF to Word conversion page"""
     return render_template('pdf_to_word.html')
+
+@main_bp.route('/word-to-pdf')
+def word_to_pdf():
+    """Word to PDF conversion page"""
+    return render_template('word_to_pdf.html')

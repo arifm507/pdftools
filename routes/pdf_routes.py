@@ -9,6 +9,8 @@ from services.pdf_merger import PDFMergerService
 from services.pdf_to_word import PDFToWordService
 from services.image_to_pdf import ImageToPDFService
 from services.pdf_compressor import PDFCompressorService
+from services.pdf_splitter import PDFSplitterService
+from services.word_to_pdf import WordToPDFService
 
 # Create blueprint for PDF routes
 pdf_bp = Blueprint('pdf', __name__, url_prefix='/api/pdf')
@@ -167,6 +169,83 @@ def compress_pdf():
     except Exception as e:
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
+@pdf_bp.route('/split', methods=['POST'])
+def split_pdf():
+    """API endpoint for splitting PDF files"""
+    try:
+        # Check if file was uploaded
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        output_filename = request.form.get('output_filename', '')
+        split_type = request.form.get('split_type', 'pages')
+        page_ranges = request.form.getlist('page_ranges[]') if split_type == 'ranges' else None
+        
+        # Initialize PDF splitter service
+        splitter_service = PDFSplitterService()
+        
+        # Split PDF
+        success, result = splitter_service.split_pdf(file, split_type, page_ranges, output_filename)
+        
+        if success:
+            # Return success with download URL
+            download_url = url_for(
+                'pdf.download_file', 
+                unique_id=result['unique_id'], 
+                filename=result['filename']
+            )
+            
+            return jsonify({
+                'success': True,
+                'message': result['message'],
+                'download_url': download_url,
+                'filename': result['filename'],
+                'split_count': result['split_count']
+            })
+        else:
+            return jsonify({'error': result}), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+@pdf_bp.route('/word-to-pdf', methods=['POST'])
+def convert_word_to_pdf():
+    """API endpoint for converting Word documents to PDF"""
+    try:
+        # Check if file was uploaded
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
+        
+        file = request.files['file']
+        output_filename = request.form.get('output_filename', '')
+        
+        # Initialize Word to PDF service
+        converter_service = WordToPDFService()
+        
+        # Convert Word to PDF
+        success, result = converter_service.convert_word_to_pdf(file, output_filename)
+        
+        if success:
+            # Return success with download URL
+            download_url = url_for(
+                'pdf.download_file', 
+                unique_id=result['unique_id'], 
+                filename=result['filename']
+            )
+            
+            return jsonify({
+                'success': True,
+                'message': result['message'],
+                'download_url': download_url,
+                'filename': result['filename']
+            })
+        else:
+            return jsonify({'error': result}), 400
+            
+    except Exception as e:
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
 @pdf_bp.route('/download/<unique_id>/<filename>')
 def download_file(unique_id, filename):
     """Download processed files (PDF or Word)"""
@@ -187,6 +266,14 @@ def download_file(unique_id, filename):
             service = PDFCompressorService()
             mimetype = 'application/pdf'
             redirect_endpoint = 'main.compress_pdf'
+        elif 'split' in filename and filename.endswith('.zip'):
+            service = PDFSplitterService()
+            mimetype = 'application/zip'
+            redirect_endpoint = 'main.split_pdf'
+        elif filename.startswith('word-to-pdf') or 'word-to-pdf' in filename:
+            service = WordToPDFService()
+            mimetype = 'application/pdf'
+            redirect_endpoint = 'main.word_to_pdf'
         else:
             service = PDFMergerService()
             mimetype = 'application/pdf'

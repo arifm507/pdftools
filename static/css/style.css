@@ -86,7 +86,6 @@ body {
 .upload-icon {
     font-size: 4rem;
     color: #667eea;
-    margin-bottom: 1rem;
 }
 
 /* Buttons */
@@ -183,7 +182,7 @@ body {
     }
     
     .upload-area {
-        padding: 2rem 1rem;
+        padding: 1rem;
     }
     
     .upload-icon {
@@ -306,4 +305,7 @@ body {
 }
 .bg-main-gradient{
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.lead {
+    font-size: 1rem;
 }

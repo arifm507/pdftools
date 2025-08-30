@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row text-center">
             <div class="col-12">
-                <h1 class="display-4 fw-bold mb-3">
+                <h1 class="display-5 fw-bold mb-3">
                     <i class="bi bi-tools me-3"></i>All PDF Tools
                 </h1>
                 <p class="lead text-muted">Comprehensive collection of PDF operations for all your needs</p>
@@ -116,20 +116,20 @@
                 </div>
             </div>
 
-            <!-- Coming Soon Tools -->
+            <!-- Word to PDF -->
             <div class="col-lg-4 col-md-6">
-                <div class="card tool-card h-100 border-secondary">
+                <div class="card tool-card h-100">
                     <div class="card-body">
-                        <div class="tool-icon text-muted">
-                            <i class="bi bi-hourglass-split"></i>
+                        <div class="tool-icon">
+                            <i class="bi bi-file-earmark-arrow-up"></i>
                         </div>
-                        <h5 class="card-title text-muted">More Tools Coming</h5>
-                        <p class="card-text text-muted">We're working on additional PDF tools including password protection, watermarks, and more conversion options.</p>
+                        <h5 class="card-title">Word to PDF</h5>
+                        <p class="card-text">Convert Word documents (.docx, .doc) to PDF format while preserving formatting and document structure.</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-light text-dark">Coming Soon</span>
-                            <button class="btn btn-outline-secondary" disabled>
-                                <i class="bi bi-clock me-1"></i>Stay Tuned
-                            </button>
+                            <span class="badge bg-success">New</span>
+                            <a href="{{ url_for('main.word_to_pdf') }}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Use Tool
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -169,9 +169,10 @@
                         <i class="bi bi-arrow-repeat display-4 text-success mb-3"></i>
                         <h5>Format Conversion</h5>
                         <p class="text-muted">Convert between PDF and other popular formats</p>
-                        <div class="d-flex gap-1 justify-content-center">
+                        <div class="d-flex gap-1 justify-content-center flex-wrap">
                             <span class="badge bg-success">Image→PDF</span>
                             <span class="badge bg-success">PDF→Word</span>
+                            <span class="badge bg-success">Word→PDF</span>
                         </div>
                     </div>
                 </div>

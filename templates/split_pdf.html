@@ -1,15 +1,524 @@
 {% extends "base.html" %}
 
-{% block title %}Split PDF - Split PDF Files{% endblock %}
+{% block title %}Split PDF - Split PDF Into Separate Files{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12 text-center">
-            <h1 class="display-4">Split PDF</h1>
-            <p class="lead">Split PDF functionality coming soon!</p>
-            <a href="{{ url_for('main.tools') }}" class="btn btn-primary">Back to Tools</a>
+<!-- Header Section -->
+<section class="bg-main-gradient text-white py-3">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="bi bi-file-earmark-break me-3"></i>Split PDF
+                </h1>
+                <p class="lead">Split your PDF into individual pages or custom page ranges</p>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Upload Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Upload Area -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-body p-4">
+                        <div id="upload-area" class="upload-area">
+                            <div class="upload-icon">
+                                <i class="bi bi-cloud-upload"></i>
+                            </div>
+                            <h4 class="mb-2">Drop PDF file here or click to browse</h4>
+                            <p class="text-muted mb-3">Select a PDF file to split into separate files</p>
+                            <input type="file" id="file-input" accept=".pdf" class="d-none">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('file-input').click()">
+                                <i class="bi bi-folder-plus me-2"></i>Choose PDF File
+                            </button>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Maximum file size: 16MB per file
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Details -->
+                <div id="file-details-container" class="d-none">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>Selected PDF File
+                                </h5>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearFile()">
+                                    <i class="bi bi-trash me-1"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="file-details" class="d-flex align-items-center">
+                                <!-- File details will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Split Options -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light border-0 py-3">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear me-2"></i>Split Options
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="output-filename" class="form-label">Output Filename Prefix</label>
+                                    <input type="text" class="form-control" id="output-filename" placeholder="Enter filename prefix">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Split Method</label>
+                                    <select class="form-select" id="split-type" name="split-type" onchange="toggleSplitOptions()">
+                                        <option value="pages" selected>Split into individual pages</option>
+                                        <option value="ranges">Split by page ranges</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Page Ranges Section -->
+                            <div id="page-ranges-section" class="d-none mt-3">
+                                <label class="form-label">Page Ranges</label>
+                                <div id="page-ranges-container">
+                                    <div class="page-range-input mb-2">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="e.g., 1-3, 5, 7-10" name="page-range">
+                                            <button type="button" class="btn btn-outline-danger" onclick="removePageRange(this)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        <small class="form-text text-muted">Enter page numbers or ranges (e.g., "1-5" for pages 1 to 5, or "7" for page 7)</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addPageRange()">
+                                    <i class="bi bi-plus me-1"></i>Add Another Range
+                                </button>
+                            </div>
+                            
+                            <div class="row g-3 mt-2">
+                                <div class="col-12">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <strong>Split Result:</strong> You will receive a ZIP file containing all the split PDF files.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success btn-lg px-5" id="split-btn" onclick="splitPDF()">
+                            <i class="bi bi-file-earmark-break me-2"></i>Split PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progress-container" class="d-none">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body text-center">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <h5>Splitting PDF...</h5>
+                            <p class="text-muted">Please wait while we split your document</p>
+                            <div class="progress mx-auto" style="max-width: 300px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="split-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div id="result-container" class="d-none">
+                    <div class="card shadow-lg border-0 border-success">
+                        <div class="card-body text-center p-4">
+                            <div class="text-success mb-3">
+                                <i class="bi bi-check-circle display-4"></i>
+                            </div>
+                            <h4 class="text-success mb-3">PDF Split Successfully!</h4>
+                            <div id="split-stats" class="mb-4">
+                                <!-- Split statistics will be shown here -->
+                            </div>
+                            
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <button type="button" class="btn btn-success btn-lg" id="download-btn">
+                                    <i class="bi bi-download me-2"></i>Download Split Files (ZIP)
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Split Another File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Instructions Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center display-6 fw-bold mb-4">How to Split PDF Files</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-upload fs-4"></i>
+                            </div>
+                            <h5>1. Upload PDF</h5>
+                            <p class="text-muted">Select your PDF file by clicking "Choose PDF File" or drag and drop it into the upload area.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-sliders fs-4"></i>
+                            </div>
+                            <h5>2. Choose Method</h5>
+                            <p class="text-muted">Select to split into individual pages or specify custom page ranges.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-download fs-4"></i>
+                            </div>
+                            <h5>3. Download</h5>
+                            <p class="text-muted">Click "Split PDF" and download your ZIP file containing all split documents.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center display-6 fw-bold mb-4">Why Use Our PDF Splitter?</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-shield-check text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Secure & Private</h5>
+                                <p class="text-muted">All files are processed securely on our servers and automatically deleted after splitting.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-lightning-charge text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Fast Processing</h5>
+                                <p class="text-muted">Quick splitting with support for both individual pages and custom ranges.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-files text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Multiple Output Options</h5>
+                                <p class="text-muted">Split into individual pages or create custom page ranges as needed.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-phone text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Mobile Friendly</h5>
+                                <p class="text-muted">Works perfectly on desktop, tablet, and mobile devices with responsive design.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedFile = null;
+
+// File input change handler
+document.getElementById('file-input').addEventListener('change', function(e) {
+    handleFile(e.target.files[0]);
+});
+
+// Drag and drop handlers
+const uploadArea = document.getElementById('upload-area');
+
+uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+function handleFile(file) {
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf') {
+        alert('Please select a PDF file.');
+        return;
+    }
+    
+    selectedFile = file;
+    updateFileDetails();
+    showFileDetails();
+}
+
+function updateFileDetails() {
+    if (!selectedFile) return;
+    
+    const fileDetails = document.getElementById('file-details');
+    fileDetails.innerHTML = `
+        <div class="d-flex align-items-center w-100">
+            <i class="bi bi-file-earmark-pdf text-danger me-3 fs-4"></i>
+            <div class="flex-grow-1">
+                <h6 class="mb-1">${selectedFile.name}</h6>
+                <small class="text-muted">Size: ${formatFileSize(selectedFile.size)}</small>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-light text-dark">PDF Document</span>
+            </div>
+        </div>
+    `;
+    
+    // Set default output filename
+    const baseName = selectedFile.name.replace('.pdf', '');
+    document.getElementById('output-filename').value = baseName;
+}
+
+function showFileDetails() {
+    document.getElementById('file-details-container').classList.remove('d-none');
+}
+
+function clearFile() {
+    selectedFile = null;
+    document.getElementById('file-details-container').classList.add('d-none');
+    document.getElementById('file-input').value = '';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function toggleSplitOptions() {
+    const splitType = document.getElementById('split-type').value;
+    const pageRangesSection = document.getElementById('page-ranges-section');
+    
+    if (splitType === 'ranges') {
+        pageRangesSection.classList.remove('d-none');
+    } else {
+        pageRangesSection.classList.add('d-none');
+    }
+}
+
+function addPageRange() {
+    const container = document.getElementById('page-ranges-container');
+    const newRange = document.createElement('div');
+    newRange.className = 'page-range-input mb-2';
+    newRange.innerHTML = `
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="e.g., 1-3, 5, 7-10" name="page-range">
+            <button type="button" class="btn btn-outline-danger" onclick="removePageRange(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+        <small class="form-text text-muted">Enter page numbers or ranges (e.g., "1-5" for pages 1 to 5, or "7" for page 7)</small>
+    `;
+    container.appendChild(newRange);
+}
+
+function removePageRange(button) {
+    const container = document.getElementById('page-ranges-container');
+    if (container.children.length > 1) {
+        button.closest('.page-range-input').remove();
+    }
+}
+
+function splitPDF() {
+    if (!selectedFile) {
+        alert('Please select a PDF file to split.');
+        return;
+    }
+    
+    const splitType = document.getElementById('split-type').value;
+    let pageRanges = [];
+    
+    if (splitType === 'ranges') {
+        const rangeInputs = document.querySelectorAll('input[name="page-range"]');
+        pageRanges = Array.from(rangeInputs)
+            .map(input => input.value.trim())
+            .filter(value => value !== '');
+        
+        if (pageRanges.length === 0) {
+            alert('Please specify at least one page range.');
+            return;
+        }
+    }
+    
+    // Show progress
+    document.getElementById('file-details-container').classList.add('d-none');
+    document.getElementById('progress-container').classList.remove('d-none');
+    
+    // Get form data
+    const outputFilename = document.getElementById('output-filename').value || selectedFile.name.replace('.pdf', '');
+    
+    // Create FormData
+    const formData = new FormData();
+    
+    // Add file and settings
+    formData.append('file', selectedFile);
+    formData.append('output_filename', outputFilename);
+    formData.append('split_type', splitType);
+    
+    // Add page ranges if specified
+    if (splitType === 'ranges') {
+        pageRanges.forEach(range => {
+            formData.append('page_ranges[]', range);
+        });
+    }
+    
+    // Send request to backend
+    fetch('/api/pdf/split', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult(data);
+        } else {
+            throw new Error(data.error || 'Unknown error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error splitting PDF: ' + error.message);
+        // Reset to file details view
+        document.getElementById('progress-container').classList.add('d-none');
+        document.getElementById('file-details-container').classList.remove('d-none');
+    });
+}
+
+function showResult(data) {
+    document.getElementById('progress-container').classList.add('d-none');
+    document.getElementById('result-container').classList.remove('d-none');
+    
+    // Show split statistics
+    const splitStats = document.getElementById('split-stats');
+    splitStats.innerHTML = `
+        <div class="row text-center">
+            <div class="col-md-6">
+                <div class="mb-2">
+                    <i class="bi bi-file-earmark-pdf text-muted fs-4"></i>
+                    <div class="mt-1">
+                        <small class="text-muted">Original PDF</small>
+                        <div class="fw-bold">${selectedFile.name}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-2">
+                    <i class="bi bi-files text-success fs-4"></i>
+                    <div class="mt-1">
+                        <small class="text-muted">Split Into</small>
+                        <div class="fw-bold text-success">${data.split_count} Files</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Set up download button
+    const downloadBtn = document.getElementById('download-btn');
+    
+    // Remove any existing event listeners
+    downloadBtn.replaceWith(downloadBtn.cloneNode(true));
+    const newDownloadBtn = document.getElementById('download-btn');
+    
+    newDownloadBtn.addEventListener('click', function() {
+        // Create a temporary link to trigger download
+        const link = document.createElement('a');
+        link.href = data.download_url;
+        link.download = data.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+
+function resetForm() {
+    selectedFile = null;
+    document.getElementById('file-input').value = '';
+    document.getElementById('file-details-container').classList.add('d-none');
+    document.getElementById('progress-container').classList.add('d-none');
+    document.getElementById('result-container').classList.add('d-none');
+    document.getElementById('output-filename').value = '';
+    document.getElementById('split-type').value = 'pages';
+    document.getElementById('page-ranges-section').classList.add('d-none');
+    
+    // Reset page ranges to just one input
+    const container = document.getElementById('page-ranges-container');
+    container.innerHTML = `
+        <div class="page-range-input mb-2">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="e.g., 1-3, 5, 7-10" name="page-range">
+                <button type="button" class="btn btn-outline-danger" onclick="removePageRange(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+            <small class="form-text text-muted">Enter page numbers or ranges (e.g., "1-5" for pages 1 to 5, or "7" for page 7)</small>
+        </div>
+    `;
+}
+</script>
 {% endblock %}

@@ -42,7 +42,7 @@
                 
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ 'active' if request.endpoint in ['main.merge_pdf', 'main.split_pdf', 'main.compress_pdf', 'main.image_to_pdf', 'main.pdf_to_word'] else '' }}" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle {{ 'active' if request.endpoint in ['main.merge_pdf', 'main.split_pdf', 'main.compress_pdf', 'main.image_to_pdf', 'main.pdf_to_word', 'main.word_to_pdf'] else '' }}" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-gear me-1"></i>Tools
                         </a>
                         <ul class="dropdown-menu">
@@ -60,6 +60,9 @@
                             </a></li>
                             <li><a class="dropdown-item {{ 'active' if request.endpoint == 'main.pdf_to_word' else '' }}" href="{{ url_for('main.pdf_to_word') }}">
                                 <i class="bi bi-file-word me-2"></i>PDF to Word
+                            </a></li>
+                            <li><a class="dropdown-item {{ 'active' if request.endpoint == 'main.word_to_pdf' else '' }}" href="{{ url_for('main.word_to_pdf') }}">
+                                <i class="bi bi-file-earmark-arrow-up me-2"></i>Word to PDF
                             </a></li>
                         </ul>
                     </li>
