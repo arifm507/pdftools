@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+
+{% block title %}Image to PDF - Convert Images to PDF{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="bg-main-gradient text-white py-4">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="bi bi-image me-3"></i>Image to PDF Converter
+                </h1>
+                <p class="lead">Convert multiple images (JPG, PNG, JPEG, etc.) into a single PDF document</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upload Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Upload Area -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-body p-4">
+                        <div id="upload-area" class="upload-area">
+                            <div class="upload-icon">
+                                <i class="bi bi-cloud-upload"></i>
+                            </div>
+                            <h4 class="mb-2">Drop images here or click to browse</h4>
+                            <p class="text-muted mb-3">Select multiple images to convert them to PDF</p>
+                            <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff,.webp" class="d-none">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('file-input').click()">
+                                <i class="bi bi-folder-plus me-2"></i>Choose Image Files
+                            </button>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Supported formats: JPG, JPEG, PNG, GIF, BMP, TIFF, WEBP
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div id="file-list-container" class="d-none">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-images me-2"></i>Selected Images
+                                </h5>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearAllFiles()">
+                                    <i class="bi bi-trash me-1"></i>Clear All
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="file-list" class="list-group list-group-flush">
+                                <!-- Files will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Convert Options -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light border-0 py-3">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear me-2"></i>Conversion Options
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="output-filename" class="form-label">Output Filename</label>
+                                    <input type="text" class="form-control" id="output-filename" value="images-to-pdf.pdf" placeholder="Enter filename">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Page Margins</label>
+                                    <select class="form-select" id="margin-size" name="margin-size">
+                                        <option value="none">No Margin (Full page)</option>
+                                        <option value="small">Small (0.5 inch)</option>
+                                        <option value="medium" selected>Medium (1 inch)</option>
+                                        <option value="large">Large (2 inches)</option>
+                                    </select>
+                                    <small class="form-text text-muted">Choose margin size around images</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Image Order</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="image-order" id="order-upload" value="upload" checked>
+                                            <label class="form-check-label" for="order-upload">
+                                                Upload Order
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="image-order" id="order-custom" value="custom">
+                                            <label class="form-check-label" for="order-custom">
+                                                Custom Order
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Image Fitting</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="maintain-aspect-ratio" checked disabled>
+                                        <label class="form-check-label" for="maintain-aspect-ratio">
+                                            Smart fitting
+                                        </label>
+                                        <small class="form-text text-muted d-block">With margins: scaled to fit. No margin: full page</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success btn-lg px-5" id="convert-btn" onclick="convertImagesToPDF()">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>Convert to PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progress-container" class="d-none">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body text-center">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <h5>Converting Images to PDF...</h5>
+                            <p class="text-muted">Please wait while we process your images</p>
+                            <div class="progress mx-auto" style="max-width: 300px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="convert-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div id="result-container" class="d-none">
+                    <div class="card shadow-lg border-0 border-success">
+                        <div class="card-body text-center p-4">
+                            <div class="text-success mb-3">
+                                <i class="bi bi-check-circle display-4"></i>
+                            </div>
+                            <h4 class="text-success mb-3">Images Converted Successfully!</h4>
+                            <p class="text-muted mb-4">Your PDF document is ready for download</p>
+                            
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <button type="button" class="btn btn-success btn-lg" id="download-btn">
+                                    <i class="bi bi-download me-2"></i>Download PDF
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Convert More Images
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Instructions Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center display-6 fw-bold mb-4">How to Convert Images to PDF</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-upload fs-4"></i>
+                            </div>
+                            <h5>1. Upload Images</h5>
+                            <p class="text-muted">Select multiple image files by clicking "Choose Image Files" or drag and drop them into the upload area.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-list-ol fs-4"></i>
+                            </div>
+                            <h5>2. Arrange Order</h5>
+                            <p class="text-muted">Drag and drop images to reorder them, or use the default upload order for the PDF pages.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-download fs-4"></i>
+                            </div>
+                            <h5>3. Download</h5>
+                            <p class="text-muted">Click "Convert to PDF" and download your PDF document when processing is complete.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center display-6 fw-bold mb-4">Why Use Our Image to PDF Converter?</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-shield-check text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Secure & Private</h5>
+                                <p class="text-muted">All images are processed securely on our servers and automatically deleted after conversion.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-lightning-charge text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Fast Processing</h5>
+                                <p class="text-muted">Quick conversion processing that maintains the original quality of your images.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-file-image text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Multiple Formats</h5>
+                                <p class="text-muted">Support for JPG, PNG, JPEG, GIF, BMP, TIFF, and WEBP image formats.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-phone text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Mobile Friendly</h5>
+                                <p class="text-muted">Works perfectly on desktop, tablet, and mobile devices with responsive design.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedFiles = [];
+const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/tiff', 'image/webp'];
+
+// File input change handler
+document.getElementById('file-input').addEventListener('change', function(e) {
+    handleFiles(e.target.files);
+});
+
+// Drag and drop handlers
+const uploadArea = document.getElementById('upload-area');
+
+uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(files) {
+    const fileArray = Array.from(files);
+    const imageFiles = fileArray.filter(file => allowedTypes.includes(file.type));
+    
+    if (imageFiles.length === 0) {
+        alert('Please select valid image files (JPG, PNG, GIF, BMP, TIFF, WEBP).');
+        return;
+    }
+    
+    selectedFiles = [...selectedFiles, ...imageFiles];
+    updateFileList();
+    showFileList();
+}
+
+function updateFileList() {
+    const fileList = document.getElementById('file-list');
+    fileList.innerHTML = '';
+    
+    selectedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'list-group-item';
+        fileItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-file-image text-primary me-3 fs-4"></i>
+                    <div>
+                        <h6 class="mb-0">${file.name}</h6>
+                        <small class="text-muted">${formatFileSize(file.size)} • ${file.type.split('/')[1].toUpperCase()}</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-light text-dark me-2">#${index + 1}</span>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeFile(${index})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        fileList.appendChild(fileItem);
+    });
+}
+
+function showFileList() {
+    if (selectedFiles.length > 0) {
+        document.getElementById('file-list-container').classList.remove('d-none');
+    }
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    updateFileList();
+    
+    if (selectedFiles.length === 0) {
+        document.getElementById('file-list-container').classList.add('d-none');
+    }
+}
+
+function clearAllFiles() {
+    selectedFiles = [];
+    document.getElementById('file-list-container').classList.add('d-none');
+    document.getElementById('file-input').value = '';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function convertImagesToPDF() {
+    if (selectedFiles.length === 0) {
+        alert('Please select at least one image file to convert.');
+        return;
+    }
+    
+    // Show progress
+    document.getElementById('file-list-container').classList.add('d-none');
+    document.getElementById('progress-container').classList.remove('d-none');
+    
+    // Get form data
+    const outputFilename = document.getElementById('output-filename').value || 'images-to-pdf.pdf';
+    const marginSize = document.getElementById('margin-size').value || 'medium';
+    
+    // Create FormData
+    const formData = new FormData();
+    
+    // Add files
+    selectedFiles.forEach((file, index) => {
+        formData.append('files[]', file);
+    });
+    
+    // Add output filename and margin size
+    formData.append('output_filename', outputFilename);
+    formData.append('margin_size', marginSize);
+    
+    // Send request to backend
+    fetch('/api/pdf/image-to-pdf', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult(data.download_url, data.filename);
+        } else {
+            throw new Error(data.error || 'Unknown error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error converting images to PDF: ' + error.message);
+        // Reset to file list view
+        document.getElementById('progress-container').classList.add('d-none');
+        document.getElementById('file-list-container').classList.remove('d-none');
+    });
+}
+
+function showResult(downloadUrl, filename) {
+    document.getElementById('progress-container').classList.add('d-none');
+    document.getElementById('result-container').classList.remove('d-none');
+    
+    // Set up download button
+    const downloadBtn = document.getElementById('download-btn');
+    
+    // Remove any existing event listeners
+    downloadBtn.replaceWith(downloadBtn.cloneNode(true));
+    const newDownloadBtn = document.getElementById('download-btn');
+    
+    newDownloadBtn.addEventListener('click', function() {
+        // Create a temporary link to trigger download
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+
+function resetForm() {
+    selectedFiles = [];
+    document.getElementById('file-input').value = '';
+    document.getElementById('file-list-container').classList.add('d-none');
+    document.getElementById('progress-container').classList.add('d-none');
+    document.getElementById('result-container').classList.add('d-none');
+    document.getElementById('output-filename').value = 'images-to-pdf.pdf';
+    document.getElementById('margin-size').value = 'medium';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Tools - Professional PDF Operations{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-3 fw-bold mb-4">
+                    <i class="bi bi-file-earmark-pdf me-3"></i>
+                    PDF Tools
+                </h1>
+                <p class="lead mb-4">
+                    Professional PDF operations made simple and secure. Merge, split, compress, and convert your PDF files with ease.
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{{ url_for('main.tools') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-tools me-2"></i>View All Tools
+                    </a>
+                    <a href="{{ url_for('main.merge_pdf') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-union me-2"></i>Start Merging
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Tools Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">Popular PDF Tools</h2>
+                <p class="lead text-muted">Choose from our most used PDF operations</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Merge PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 fade-in">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-union"></i>
+                        </div>
+                        <h5 class="card-title">Merge PDF</h5>
+                        <p class="card-text">Combine multiple PDF files into a single document quickly and easily.</p>
+                        <a href="{{ url_for('main.merge_pdf') }}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>Start Merging
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Split PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 fade-in">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-scissors"></i>
+                        </div>
+                        <h5 class="card-title">Split PDF</h5>
+                        <p class="card-text">Extract pages from your PDF or split it into multiple documents.</p>
+                        <a href="{{ url_for('main.split_pdf') }}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>Start Splitting
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compress PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 fade-in">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-file-zip"></i>
+                        </div>
+                        <h5 class="card-title">Compress PDF</h5>
+                        <p class="card-text">Reduce PDF file size while maintaining quality for easy sharing.</p>
+                        <a href="{{ url_for('main.compress_pdf') }}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>Start Compressing
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image to PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 fade-in">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        <h5 class="card-title">Image to PDF</h5>
+                        <p class="card-text">Convert your images (JPG, PNG, etc.) into professional PDF documents.</p>
+                        <a href="{{ url_for('main.image_to_pdf') }}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>Start Converting
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF to Word -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 fade-in">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-file-word"></i>
+                        </div>
+                        <h5 class="card-title">PDF to Word</h5>
+                        <p class="card-text">Convert PDF files to editable Word documents with preserved formatting.</p>
+                        <a href="{{ url_for('main.pdf_to_word') }}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>Start Converting
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View All Tools -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 fade-in border-primary">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-plus-circle"></i>
+                        </div>
+                        <h5 class="card-title">More Tools</h5>
+                        <p class="card-text">Explore all available PDF tools and operations in one place.</p>
+                        <a href="{{ url_for('main.tools') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-tools me-2"></i>View All Tools
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">Why Choose Our PDF Tools?</h2>
+                <p class="lead text-muted">Fast, secure, and reliable PDF operations</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h5>Fast Processing</h5>
+                    <p class="text-muted">Quick and efficient PDF operations without compromising quality.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5>Secure & Private</h5>
+                    <p class="text-muted">Your files are processed securely and deleted after processing.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-hand-thumbs-up"></i>
+                    </div>
+                    <h5>Easy to Use</h5>
+                    <p class="text-muted">Simple drag-and-drop interface that works on any device.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <h5>High Quality</h5>
+                    <p class="text-muted">Maintain the original quality of your documents throughout processing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

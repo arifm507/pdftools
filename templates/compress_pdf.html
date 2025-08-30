@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block title %}Compress PDF - Reduce PDF File Size{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="bg-main-gradient text-white py-4">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="bi bi-archive me-3"></i>Compress PDF
+                </h1>
+                <p class="lead">Reduce PDF file size while maintaining quality for easier sharing and storage</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upload Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Upload Area -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-body p-4">
+                        <div id="upload-area" class="upload-area">
+                            <div class="upload-icon">
+                                <i class="bi bi-cloud-upload"></i>
+                            </div>
+                            <h4 class="mb-2">Drop PDF file here or click to browse</h4>
+                            <p class="text-muted mb-3">Select a PDF file to compress and reduce its size</p>
+                            <input type="file" id="file-input" accept=".pdf" class="d-none">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('file-input').click()">
+                                <i class="bi bi-folder-plus me-2"></i>Choose PDF File
+                            </button>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Maximum file size: 16MB per file
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Details -->
+                <div id="file-details-container" class="d-none">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>Selected PDF File
+                                </h5>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearFile()">
+                                    <i class="bi bi-trash me-1"></i>Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="file-details" class="d-flex align-items-center">
+                                <!-- File details will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compression Options -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-light border-0 py-3">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear me-2"></i>Compression Options
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="output-filename" class="form-label">Output Filename</label>
+                                    <input type="text" class="form-control" id="output-filename" placeholder="Enter filename">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Compression Level</label>
+                                    <select class="form-select" id="compression-level" name="compression-level">
+                                        <option value="low">Low - Better Quality (Less compression)</option>
+                                        <option value="medium" selected>Medium - Balanced (Recommended)</option>
+                                        <option value="high">High - Smaller Size (More compression)</option>
+                                    </select>
+                                    <small class="form-text text-muted">Higher compression = smaller file size</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mt-2">
+                                <div class="col-12">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <strong>Compression Process:</strong> We optimize images, remove unnecessary data, and compress content while preserving document quality and readability.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success btn-lg px-5" id="compress-btn" onclick="compressPDF()">
+                            <i class="bi bi-archive me-2"></i>Compress PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progress-container" class="d-none">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body text-center">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <h5>Compressing PDF...</h5>
+                            <p class="text-muted">Please wait while we optimize your document</p>
+                            <div class="progress mx-auto" style="max-width: 300px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="compress-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div id="result-container" class="d-none">
+                    <div class="card shadow-lg border-0 border-success">
+                        <div class="card-body text-center p-4">
+                            <div class="text-success mb-3">
+                                <i class="bi bi-check-circle display-4"></i>
+                            </div>
+                            <h4 class="text-success mb-3">PDF Compressed Successfully!</h4>
+                            <div id="compression-stats" class="mb-4">
+                                <!-- Compression statistics will be shown here -->
+                            </div>
+                            
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <button type="button" class="btn btn-success btn-lg" id="download-btn">
+                                    <i class="bi bi-download me-2"></i>Download Compressed PDF
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="resetForm()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Compress Another File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Instructions Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center display-6 fw-bold mb-4">How to Compress PDF Files</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-upload fs-4"></i>
+                            </div>
+                            <h5>1. Upload PDF</h5>
+                            <p class="text-muted">Select your PDF file by clicking "Choose PDF File" or drag and drop it into the upload area.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-sliders fs-4"></i>
+                            </div>
+                            <h5>2. Choose Settings</h5>
+                            <p class="text-muted">Select compression level and customize the output filename according to your needs.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="bi bi-download fs-4"></i>
+                            </div>
+                            <h5>3. Download</h5>
+                            <p class="text-muted">Click "Compress PDF" and download your optimized file with reduced size.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="text-center display-6 fw-bold mb-4">Why Use Our PDF Compressor?</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-shield-check text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Secure & Private</h5>
+                                <p class="text-muted">All files are processed securely on our servers and automatically deleted after compression.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-lightning-charge text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Fast Compression</h5>
+                                <p class="text-muted">Quick processing that significantly reduces file size while maintaining document quality.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-eye text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Quality Preserved</h5>
+                                <p class="text-muted">Advanced algorithms ensure your PDF remains readable and professional-looking.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-phone text-primary fs-2 me-3"></i>
+                            </div>
+                            <div>
+                                <h5>Mobile Friendly</h5>
+                                <p class="text-muted">Works perfectly on desktop, tablet, and mobile devices with responsive design.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedFile = null;
+
+// File input change handler
+document.getElementById('file-input').addEventListener('change', function(e) {
+    handleFile(e.target.files[0]);
+});
+
+// Drag and drop handlers
+const uploadArea = document.getElementById('upload-area');
+
+uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+function handleFile(file) {
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf') {
+        alert('Please select a PDF file.');
+        return;
+    }
+    
+    selectedFile = file;
+    updateFileDetails();
+    showFileDetails();
+}
+
+function updateFileDetails() {
+    if (!selectedFile) return;
+    
+    const fileDetails = document.getElementById('file-details');
+    fileDetails.innerHTML = `
+        <div class="d-flex align-items-center w-100">
+            <i class="bi bi-file-earmark-pdf text-danger me-3 fs-4"></i>
+            <div class="flex-grow-1">
+                <h6 class="mb-1">${selectedFile.name}</h6>
+                <small class="text-muted">Size: ${formatFileSize(selectedFile.size)}</small>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-light text-dark">PDF Document</span>
+            </div>
+        </div>
+    `;
+    
+    // Set default output filename
+    const baseName = selectedFile.name.replace('.pdf', '');
+    document.getElementById('output-filename').value = `${baseName}_compressed.pdf`;
+}
+
+function showFileDetails() {
+    document.getElementById('file-details-container').classList.remove('d-none');
+}
+
+function clearFile() {
+    selectedFile = null;
+    document.getElementById('file-details-container').classList.add('d-none');
+    document.getElementById('file-input').value = '';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function compressPDF() {
+    if (!selectedFile) {
+        alert('Please select a PDF file to compress.');
+        return;
+    }
+    
+    // Show progress
+    document.getElementById('file-details-container').classList.add('d-none');
+    document.getElementById('progress-container').classList.remove('d-none');
+    
+    // Get form data
+    const outputFilename = document.getElementById('output-filename').value || `${selectedFile.name}_compressed.pdf`;
+    const compressionLevel = document.getElementById('compression-level').value || 'medium';
+    
+    // Create FormData
+    const formData = new FormData();
+    
+    // Add file and settings
+    formData.append('file', selectedFile);
+    formData.append('output_filename', outputFilename);
+    formData.append('compression_level', compressionLevel);
+    
+    // Send request to backend
+    fetch('/api/pdf/compress', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showResult(data);
+        } else {
+            throw new Error(data.error || 'Unknown error occurred');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error compressing PDF: ' + error.message);
+        // Reset to file details view
+        document.getElementById('progress-container').classList.add('d-none');
+        document.getElementById('file-details-container').classList.remove('d-none');
+    });
+}
+
+function showResult(data) {
+    document.getElementById('progress-container').classList.add('d-none');
+    document.getElementById('result-container').classList.remove('d-none');
+    
+    // Show compression statistics
+    const compressionStats = document.getElementById('compression-stats');
+    compressionStats.innerHTML = `
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="mb-2">
+                    <i class="bi bi-file-earmark-pdf text-muted fs-4"></i>
+                    <div class="mt-1">
+                        <small class="text-muted">Original Size</small>
+                        <div class="fw-bold">${data.original_size}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-2">
+                    <i class="bi bi-arrow-right text-primary fs-4"></i>
+                    <div class="mt-1">
+                        <small class="text-muted">Size Reduced By</small>
+                        <div class="fw-bold text-success">${data.compression_ratio}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-2">
+                    <i class="bi bi-file-earmark-pdf-fill text-success fs-4"></i>
+                    <div class="mt-1">
+                        <small class="text-muted">Compressed Size</small>
+                        <div class="fw-bold text-success">${data.compressed_size}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Set up download button
+    const downloadBtn = document.getElementById('download-btn');
+    
+    // Remove any existing event listeners
+    downloadBtn.replaceWith(downloadBtn.cloneNode(true));
+    const newDownloadBtn = document.getElementById('download-btn');
+    
+    newDownloadBtn.addEventListener('click', function() {
+        // Create a temporary link to trigger download
+        const link = document.createElement('a');
+        link.href = data.download_url;
+        link.download = data.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+
+function resetForm() {
+    selectedFile = null;
+    document.getElementById('file-input').value = '';
+    document.getElementById('file-details-container').classList.add('d-none');
+    document.getElementById('progress-container').classList.add('d-none');
+    document.getElementById('result-container').classList.add('d-none');
+    document.getElementById('output-filename').value = '';
+    document.getElementById('compression-level').value = 'medium';
+}
+</script>
+{% endblock %}

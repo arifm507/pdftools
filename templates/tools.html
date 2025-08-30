@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}All PDF Tools - PDF Operations{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-12">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="bi bi-tools me-3"></i>All PDF Tools
+                </h1>
+                <p class="lead text-muted">Comprehensive collection of PDF operations for all your needs</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tools Grid -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Merge PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-union"></i>
+                        </div>
+                        <h5 class="card-title">Merge PDF</h5>
+                        <p class="card-text">Combine multiple PDF files into a single document. Perfect for consolidating reports, presentations, or documents.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">Most Popular</span>
+                            <a href="{{ url_for('main.merge_pdf') }}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Split PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-scissors"></i>
+                        </div>
+                        <h5 class="card-title">Split PDF</h5>
+                        <p class="card-text">Extract specific pages or split your PDF into multiple documents. Great for separating sections or chapters.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-success">New</span>
+                            <a href="{{ url_for('main.split_pdf') }}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compress PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-file-zip"></i>
+                        </div>
+                        <h5 class="card-title">Compress PDF</h5>
+                        <p class="card-text">Reduce PDF file size while maintaining quality. Ideal for email attachments and web uploads.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-info">Recommended</span>
+                            <a href="{{ url_for('main.compress_pdf') }}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image to PDF -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        <h5 class="card-title">Image to PDF</h5>
+                        <p class="card-text">Convert JPG, PNG, and other image formats into professional PDF documents with custom layouts.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-warning text-dark">Popular</span>
+                            <a href="{{ url_for('main.image_to_pdf') }}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF to Word -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100">
+                    <div class="card-body">
+                        <div class="tool-icon">
+                            <i class="bi bi-file-word"></i>
+                        </div>
+                        <h5 class="card-title">PDF to Word</h5>
+                        <p class="card-text">Convert PDF files to editable Word documents while preserving formatting, tables, and images.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-secondary">Premium</span>
+                            <a href="{{ url_for('main.pdf_to_word') }}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Use Tool
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coming Soon Tools -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card tool-card h-100 border-secondary">
+                    <div class="card-body">
+                        <div class="tool-icon text-muted">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <h5 class="card-title text-muted">More Tools Coming</h5>
+                        <p class="card-text text-muted">We're working on additional PDF tools including password protection, watermarks, and more conversion options.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark">Coming Soon</span>
+                            <button class="btn btn-outline-secondary" disabled>
+                                <i class="bi bi-clock me-1"></i>Stay Tuned
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tool Categories -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col-12">
+                <h2 class="display-6 fw-bold mb-3">Tool Categories</h2>
+                <p class="lead text-muted">Organized by functionality for easy access</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-file-earmark-text display-4 text-primary mb-3"></i>
+                        <h5>Document Management</h5>
+                        <p class="text-muted">Merge, split, and organize your PDF documents</p>
+                        <div class="d-flex gap-1 justify-content-center">
+                            <span class="badge bg-primary">Merge</span>
+                            <span class="badge bg-primary">Split</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-arrow-repeat display-4 text-success mb-3"></i>
+                        <h5>Format Conversion</h5>
+                        <p class="text-muted">Convert between PDF and other popular formats</p>
+                        <div class="d-flex gap-1 justify-content-center">
+                            <span class="badge bg-success">Image→PDF</span>
+                            <span class="badge bg-success">PDF→Word</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-gear display-4 text-info mb-3"></i>
+                        <h5>Optimization</h5>
+                        <p class="text-muted">Compress and optimize your PDF files</p>
+                        <div class="d-flex gap-1 justify-content-center">
+                            <span class="badge bg-info">Compress</span>
+                            <span class="badge bg-light text-dark">More Soon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-shield-check display-4 text-warning mb-3"></i>
+                        <h5>Security</h5>
+                        <p class="text-muted">Password protection and security features</p>
+                        <div class="d-flex gap-1 justify-content-center">
+                            <span class="badge bg-light text-dark">Coming Soon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Start Guide -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-6 fw-bold mb-4">How It Works</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold fs-4">1</span>
+                            </div>
+                            <h5>Choose Tool</h5>
+                            <p class="text-muted">Select the PDF operation you need from our collection of tools.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold fs-4">2</span>
+                            </div>
+                            <h5>Upload Files</h5>
+                            <p class="text-muted">Drag and drop or click to upload your PDF or image files.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold fs-4">3</span>
+                            </div>
+                            <h5>Download Result</h5>
+                            <p class="text-muted">Process your files and download the result instantly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
